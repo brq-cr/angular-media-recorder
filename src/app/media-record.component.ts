@@ -25,7 +25,7 @@ export class MediaRecordComponent implements OnInit {
   // Codecs: https://developer.mozilla.org/en-US/docs/Web/Media/Formats/codecs_parameter
 
   // MP3 = audio/mpeg
-  // OGG - Vorbis = audio/ogg; codecs=vorbis
+  // OGG = audio/ogg; codecs=vorbis
   options = {
     type: 'audio/ogg; codecs=vorbis',
   };
