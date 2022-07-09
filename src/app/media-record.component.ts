@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { from, Observable } from 'rxjs';
 
 @Component({
@@ -23,6 +23,8 @@ export class MediaRecordComponent implements OnInit {
   audioChunks: Blob[] = [];
   isRecording: Boolean = false;
 
+  constructor(private render: Renderer2) {}
+
   ngOnInit() {
     this.askBrowserPermitions$().subscribe((stream) => {
       this.mediaRecorderInstance = new MediaRecorder(stream);
@@ -41,16 +43,16 @@ export class MediaRecordComponent implements OnInit {
 
   private saveRecordToFile(audioBlob: Blob) {
     const blobUrl = URL.createObjectURL(audioBlob);
-    const audio = document.createElement('audio');
+    const audio = this.render.createElement('audio');
     audio.setAttribute('src', blobUrl);
     audio.setAttribute('controls', '');
-    document.append(audio);
+    this.render.appendChild(this.render.selectRootElement('.video'), audio);
 
-    let a = document.createElement('a');
+    let a = this.render.createElement('a');
     a.setAttribute('href', blobUrl);
     a.setAttribute('download', `recording-${new Date().toISOString()}.oga`);
     a.innerText = 'Download';
-    document.append(a);
+    this.render.appendChild(this.render.selectRootElement('.video'), audio);
 
     // Clean Audio
     this.audioChunks = [];
