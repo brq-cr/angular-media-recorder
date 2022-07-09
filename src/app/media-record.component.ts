@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { from, Observable } from 'rxjs';
 
 @Component({
@@ -27,6 +33,8 @@ export class MediaRecordComponent implements OnInit {
   audioChunks: Blob[] = [];
   isRecording: Boolean = false;
 
+  constructor(private renderer2: Renderer2) {}
+
   ngOnInit() {
     this.askBrowserPermitions$().subscribe((stream) => {
       this.mediaRecorderInstance = new MediaRecorder(stream);
@@ -44,8 +52,11 @@ export class MediaRecordComponent implements OnInit {
   }
 
   private saveRecordToFile(audioBlob: Blob) {
-    const url = window.URL.createObjectURL(audioBlob);
-    window.open(url);
+    const audioURL = window.URL.createObjectURL(audioBlob);
+    const audioControl = this.renderer2.createElement('audio');
+    this.renderer2.setAttribute(audioControl, 'src', audioURL);
+    this.renderer2.setAttribute(audioControl, 'controls', '');
+    this.renderer2.appendChild(this.audioContainer.nativeElement, audioControl);
     // Clean Audio
     this.audioChunks = [];
   }
