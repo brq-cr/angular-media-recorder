@@ -11,7 +11,7 @@ import { from, Observable } from 'rxjs';
 })
 export class MediaRecordComponent {
   @ViewChild('audioContainer') audioContainer: ElementRef;
-  constraints = {
+  private constraints = {
     audio: true,
     video: false,
   };
@@ -20,12 +20,13 @@ export class MediaRecordComponent {
 
   // MP3 = audio/mpeg
   // OGG = audio/ogg; codecs=vorbis
-  options = {
+  private options = {
     type: 'audio/ogg; codecs=vorbis',
   };
-  mediaRecorderInstance: MediaRecorder = null;
-  audioChunks: Blob[] = [];
-  isRecording: Boolean = false;
+  private mediaRecorderInstance: MediaRecorder = null;
+  private audioChunks: Blob[] = [];
+  private stream: MediaStream = null;
+  public isRecording: Boolean = false;
 
   constructor(private renderer2: Renderer2) {}
 
@@ -45,7 +46,8 @@ export class MediaRecordComponent {
 
   private startRecording() {
     this.getAudioStream$().subscribe((mediaStream) => {
-      this.mediaRecorderInstance = new MediaRecorder(mediaStream);
+      this.stream = mediaStream;
+      this.mediaRecorderInstance = new MediaRecorder(this.stream);
       this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
         this.audioChunks.push(event.data);
       });
@@ -58,9 +60,14 @@ export class MediaRecordComponent {
 
   private stopRecording() {
     this.mediaRecorderInstance.stop();
+    this.stream.getTracks().forEach((track) => {
+      if (track.readyState === 'live') {
+        track.stop();
+      }
+    });
   }
 
-  onStartStop() {
+  public onStartStop() {
     if (this.isRecording) {
       this.stopRecording();
     } else {
