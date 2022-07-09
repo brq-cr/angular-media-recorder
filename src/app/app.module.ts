@@ -3,11 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { MediaRecord } from './media-record.component';
+import { MediaRecordComponent } from './media-record.component';
 
 @NgModule({
   imports: [BrowserModule, FormsModule],
-  declarations: [AppComponent, MediaRecord],
+  declarations: [AppComponent, MediaRecordComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
