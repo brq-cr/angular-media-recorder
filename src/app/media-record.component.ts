@@ -4,7 +4,7 @@ import { from, Observable } from 'rxjs';
 @Component({
   selector: 'media-record',
   template: `
-    <button (click)="onStartStop" type="button">{{isRecording ? 'Stop' : 'Record'}}</button>
+    <button (click)="onStartStop()" type="button">{{isRecording ? 'Stop' : 'Record'}}</button>
     <div class="audio"></div>
   `,
   styles: [`h1 { font-family: Lato; }`],
