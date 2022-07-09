@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { from, Observable } from 'rxjs';
 
 @Component({
@@ -15,7 +9,7 @@ import { from, Observable } from 'rxjs';
   `,
   styles: [`h1 { font-family: Lato; }`],
 })
-export class MediaRecordComponent implements OnInit {
+export class MediaRecordComponent {
   @ViewChild('audioContainer') audioContainer: ElementRef;
   constraints = {
     audio: true,
@@ -35,19 +29,7 @@ export class MediaRecordComponent implements OnInit {
 
   constructor(private renderer2: Renderer2) {}
 
-  ngOnInit() {
-    this.askBrowserPermitions$().subscribe((stream) => {
-      this.mediaRecorderInstance = new MediaRecorder(stream);
-      this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
-        this.audioChunks.push(event.data);
-      });
-      this.mediaRecorderInstance.addEventListener('stop', () => {
-        this.saveRecordToFile(new Blob(this.audioChunks, this.options));
-      });
-    });
-  }
-
-  private askBrowserPermitions$(): Observable<MediaStream> {
+  private getAudioStream$(): Observable<MediaStream> {
     return from(navigator.mediaDevices.getUserMedia(this.constraints));
   }
 
@@ -62,7 +44,16 @@ export class MediaRecordComponent implements OnInit {
   }
 
   private startRecording() {
-    this.mediaRecorderInstance.start();
+    this.getAudioStream$().subscribe((mediaStream) => {
+      this.mediaRecorderInstance = new MediaRecorder(mediaStream);
+      this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
+        this.audioChunks.push(event.data);
+      });
+      this.mediaRecorderInstance.addEventListener('stop', () => {
+        this.saveRecordToFile(new Blob(this.audioChunks, this.options));
+      });
+      this.mediaRecorderInstance.start();
+    });
   }
 
   private stopRecording() {
