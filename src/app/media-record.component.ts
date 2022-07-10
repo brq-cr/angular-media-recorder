@@ -1,5 +1,6 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { from, Observable } from 'rxjs';
+import OpusMediaRecorder from 'opus-media-recorder/OpusMediaRecorder.umd.js';
 
 @Component({
   selector: 'media-record',
@@ -21,9 +22,9 @@ export class MediaRecordComponent {
   // MP3 = audio/mpeg
   // OGG = audio/ogg; codecs=vorbis
   private options = {
-    type: 'audio/ogg; codecs=vorbis',
+    type: 'audio/ogg; codecs=opus',
   };
-  private mediaRecorderInstance: MediaRecorder = null;
+  private mediaRecorderInstance: OpusMediaRecorder = null;
   private audioChunks: Blob[] = [];
   private stream: MediaStream = null;
   public isRecording: Boolean = false;
@@ -36,6 +37,7 @@ export class MediaRecordComponent {
 
   private saveRecordToFile(audioBlob: Blob) {
     const audioURL = window.URL.createObjectURL(audioBlob);
+    console.log(audioURL);
     const audioControl = this.renderer2.createElement('audio');
     this.renderer2.setAttribute(audioControl, 'src', audioURL);
     this.renderer2.setAttribute(audioControl, 'controls', '');
@@ -45,13 +47,26 @@ export class MediaRecordComponent {
   }
 
   private startRecording() {
+    let opusBasePath = 'scripts/opus-media-recorder/';
+    let workerOptions = {
+      encoderWorkerFactory: () =>
+        new Worker(opusBasePath + 'encoderWorker.umd.js'),
+      OggOpusEncoderWasmPath: 'OggOpusEncoder.wasm',
+      WebMOpusEncoderWasmPath: 'WebMOpusEncoder.wasm',
+    };
     this.getAudioStream$().subscribe((mediaStream) => {
       this.stream = mediaStream;
-      this.mediaRecorderInstance = new MediaRecorder(this.stream);
+      this.mediaRecorderInstance = new OpusMediaRecorder(
+        this.stream,
+        { mimeType: 'audio/ogg' },
+        workerOptions
+      );
       this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
+        console.log(event);
         this.audioChunks.push(event.data);
       });
       this.mediaRecorderInstance.addEventListener('stop', () => {
+        console.log('haapees');
         this.saveRecordToFile(new Blob(this.audioChunks, this.options));
       });
       this.mediaRecorderInstance.start();
