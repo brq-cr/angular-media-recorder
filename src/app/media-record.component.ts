@@ -61,14 +61,14 @@ export class MediaRecordComponent {
         { mimeType: 'audio/ogg' },
         workerOptions
       );
-      this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
-        console.log(event);
-        this.audioChunks.push(event.data);
-      });
       this.mediaRecorderInstance.addEventListener('stop', () => {
         console.log('haapees');
         this.saveRecordToFile(new Blob(this.audioChunks, this.options));
       });
+      this.mediaRecorderInstance.ondataavailable = (event) => {
+        console.log(event);
+        this.audioChunks.push(event.data);
+      };
       this.mediaRecorderInstance.start();
     });
   }
