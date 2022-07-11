@@ -1,6 +1,19 @@
+<!-- load OpusMediaRecorder.umd.js. OpusMediaRecorder will be loaded. -->
 <script src="https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OpusMediaRecorder.umd.js"></script>
 <!-- load encoderWorker.umd.js. This should be after OpusMediaRecorder. -->
 <!-- This script tag will create OpusMediaRecorder.encoderWorker. -->
 <script src="https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/encoderWorker.umd.js"></script>
+ 
+<script>
+...
+// If you already load encoderWorker.js using <script> tag,
+// you don't need to define encoderWorkerFactory.
+const workerOptions = {
+  OggOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
+  WebMOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/WebMOpusEncoder.wasm'
+};
+ 
+// Replace MediaRecorder
+window.MediaRecorder = OpusMediaRecorder;
 
 <my-app>loading</my-app>

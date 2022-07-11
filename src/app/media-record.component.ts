@@ -1,6 +1,5 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { from, Observable } from 'rxjs';
-import OpusMediaRecorder from 'opus-media-recorder/OpusMediaRecorder.umd.js';
 
 @Component({
   selector: 'media-record',
@@ -24,7 +23,7 @@ export class MediaRecordComponent {
   private options = {
     type: 'audio/ogg; codecs=opus',
   };
-  private mediaRecorderInstance: OpusMediaRecorder = null;
+  private mediaRecorderInstance: any = null;
   private audioChunks: Blob[] = [];
   private stream: MediaStream = null;
   public isRecording: Boolean = false;
@@ -47,16 +46,16 @@ export class MediaRecordComponent {
   }
 
   private startRecording() {
-    let opusBasePath = 'scripts/opus-media-recorder/';
     let workerOptions = {
-      encoderWorkerFactory: () =>
-        new Worker(opusBasePath + 'encoderWorker.umd.js'),
-      OggOpusEncoderWasmPath: 'OggOpusEncoder.wasm',
-      WebMOpusEncoderWasmPath: 'WebMOpusEncoder.wasm',
+      OggOpusEncoderWasmPath:
+        'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
+      WebMOpusEncoderWasmPath:
+        'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/WebMOpusEncoder.wasm',
     };
     this.getAudioStream$().subscribe((mediaStream) => {
       this.stream = mediaStream;
-      this.mediaRecorderInstance = new OpusMediaRecorder(
+      // @ts-ignore
+      this.mediaRecorderInstance = new MediaRecorder(
         this.stream,
         { mimeType: 'audio/ogg' },
         workerOptions
