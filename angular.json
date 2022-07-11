@@ -20,7 +20,10 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.css"],
-            "scripts": []
+            "scripts": [
+              "https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OpusMediaRecorder.umd.js",
+              "https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/encoderWorker.umd.js"
+            ]
           },
           "configurations": {
             "production": {
