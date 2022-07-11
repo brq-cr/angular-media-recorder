@@ -55,7 +55,7 @@ export class MediaRecordComponent {
     this.getAudioStream$().subscribe((mediaStream) => {
       this.stream = mediaStream;
       // @ts-ignore
-      this.mediaRecorderInstance = new MediaRecorder(
+      this.mediaRecorderInstance = new window.MediaRecorder(
         this.stream,
         { mimeType: 'audio/ogg' },
         workerOptions
