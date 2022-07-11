@@ -1,6 +1,8 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { from, Observable } from 'rxjs';
 
+declare var OpusMediaRecorder: any;
+
 @Component({
   selector: 'media-record',
   template: `
@@ -46,6 +48,8 @@ export class MediaRecordComponent {
   }
 
   private startRecording() {
+    console.log('12312');
+    console.log(OpusMediaRecorder, 'test');
     let workerOptions = {
       OggOpusEncoderWasmPath:
         'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
@@ -55,19 +59,14 @@ export class MediaRecordComponent {
     this.getAudioStream$().subscribe((mediaStream) => {
       this.stream = mediaStream;
       // @ts-ignore
-      this.mediaRecorderInstance = new window.MediaRecorder(
-        this.stream,
-        { mimeType: 'audio/ogg' },
-        workerOptions
-      );
+      this.mediaRecorderInstance = new MediaRecorder(this.stream);
       this.mediaRecorderInstance.addEventListener('stop', () => {
-        console.log('haapees');
         this.saveRecordToFile(new Blob(this.audioChunks, this.options));
       });
-      this.mediaRecorderInstance.ondataavailable = (event) => {
+      this.mediaRecorderInstance.addEventListener('dataavailable', (event) => {
         console.log(event);
         this.audioChunks.push(event.data);
-      };
+      });
       this.mediaRecorderInstance.start();
     });
   }
